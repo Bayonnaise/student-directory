@@ -3,20 +3,15 @@
 @filename = ARGV.first
 
 def check_cohort cohort
-	while !@months.include?(cohort.capitalize)
-		# is in array
+	while !@months.include?(cohort.capitalize) # is in array
 		puts "That doesn't look like a month. Try again."
 		cohort = STDIN.gets.chomp
 	end
-	cohort.capitalize.to_sym
+	cohort.capitalize
 end
 
 def lonely_student
-	if @students.length == 1
-		"student"
-	else
-		"students"
-	end
+	@students.length == 1 ? "student" : "students"
 end
 
 def sort_by_cohort # ahhh sort out later what even is this
@@ -28,6 +23,10 @@ def sort_by_cohort # ahhh sort out later what even is this
 		# @students.
 	end
 	# month_array = @students.map { |student| student[:cohort] if student[:cohort] == month }
+end
+
+def update_students(name, cohort, hobby, country)
+	@students << {:name => name, :cohort => cohort.to_sym, :hobby => hobby, :country => country}
 end
 
 def input_students
@@ -45,13 +44,12 @@ def input_students
 		puts "Where does #{name} come from?"
 		country = STDIN.gets.chomp
 
-		@students << {:name => name, :cohort => cohort, :hobby => hobby, :country => country}
+		update_students(name, cohort, hobby, country)
 
 		puts "Your list now contains #{@students.length} #{lonely_student}."
 		puts "Please enter another name, or press enter twice to exit"
 		name = STDIN.gets.chomp
-	end
-	# goes back to menu
+	end # goes back to menu
 end
 
 def show_students
@@ -79,8 +77,7 @@ def check_file_exists
 		case input
 			when "y"
 				#create file
-				new_file = File.new(@filename, "w")
-				new_file.close
+				File.open(@filename, 'w') {|new_file|}
 				puts "Successfully creates #{@filename}"
 			when "n"
 				#exit
@@ -95,23 +92,22 @@ def check_file_exists
 end
 
 def save_students
-	file = File.open(@filename, 'w')
-	@students.each do |student|
-		data = [student[:name], student[:cohort], student[:hobby], student[:country]]
-		line = data.join(',')
-		file.puts line
+	File.open(@filename, 'w') do |file|
+		@students.each do |student|
+			data = [student[:name], student[:cohort], student[:hobby], student[:country]].join(',')
+			file.puts data
+		end
 	end
-	file.close
 	puts "Successfully saved to #{@filename}!"
 end
 
 def load_students
-	file = File.open(@filename, 'r')
-	file.readlines.each do |line|
-		name, cohort, hobby, country = line.chomp.split(',')
-		@students << {:name => name, :cohort => cohort.to_sym, :hobby => hobby, :country => country}
+	File.open(@filename, 'r') do |file|
+		file.readlines.each do |line|
+			name, cohort, hobby, country = line.chomp.split(',')
+			update_students(name, cohort, hobby, country)
+		end
 	end
-	file.close
 	puts "\nSuccessfully updated the student list from #{@filename}!"
 end
 
@@ -121,17 +117,16 @@ def try_load_students
 	@filename = check_file_exists
 
 	load_students
+
 	puts "Successfully loaded #{@students.length} #{lonely_student} from #{@filename}!\n"
 end
 
 def print_menu
-	puts
-	puts "1. Input the students"
+	puts "\n1. Input the students"
 	puts "2. Show the students"
 	puts "3. Save the list to students.csv"
 	puts "4. Load the list from students.csv"
-	puts "9. Exit" # 9 because we'll be adding more items  
-	puts
+	puts "9. Exit\n" # 9 because we'll be adding more items  
 end
 
 def process selection
