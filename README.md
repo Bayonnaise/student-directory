@@ -1,7 +1,8 @@
 Student Directory
 =================
+**Makers Academy - Week one**
 
-A simple program to deal with the members of the varous Makers Academy cohorts. It will allow the to manually input members, as well as loading from and saving to .csv files.
+A simple program to record and list the members of the varous Makers Academy cohorts. The user can manually input members, as well as loading from and saving to .csv files.
 
 Day one/two
 -----------
